@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="OddiBites - Your go-to street food vendor in Nairobi for delicious grilled and fried chicken, eggs, and more. Order now via WhatsApp!">
+    <meta name="keywords" content="OddiBites, Nairobi street food, grilled chicken, fried chicken, eggs, food delivery, WhatsApp ordering">
+    <meta name="author" content="OddiBites">
+    <meta name="robots" content="index, follow">
+    <title>OddiBites - Nairobi Street Food</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+        rel="stylesheet"
+        as="style"
+        onload="this.rel='stylesheet'"
+        href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&family=Space+Grotesk%3Awght%40400%3B500%3B700"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": "OddiBites",
+        "description": "Street food vendor in Nairobi offering high-quality grilled and fried chicken, eggs, and sides with delivery within Nairobi and its environs.",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Main Street",
+            "addressLocality": "Nairobi",
+            "addressCountry": "KE"
+        },
+        "telephone": "+254705012055",
+        "servesCuisine": "Street Food",
+        "openingHours": "Mo-Su 08:00-20:00",
+        "menu": "https://oddibites.com/#menu"
+    }
+    </script>
+</head>
+<body>
+    <div id="app" class="relative flex size-full min-h-screen flex-col bg-[#fcfaf8] group/design-root overflow-x-hidden" style='--select-button-svg: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(156,112,73)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e"); font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
+        <div class="layout-container flex h-full grow flex-col">
+            <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4ede7] px-4 sm:px-10 py-3">
+                <div class="flex items-center gap-4 text-[#1c140d]">
+                    <div class="size-4">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-[#1c140d] text-lg font-bold leading-tight tracking-[-0.015em]">OddiBites</h1>
+                </div>
+                <nav class="flex flex-1 justify-end gap-8">
+                    <div class="flex items-center gap-4 sm:gap-9">
+                        <a class="text-[#1c140d] text-sm font-medium leading-normal" href="#menu">Menu</a>
+                        <a class="text-[#1c140d] text-sm font-medium leading-normal" href="#recipes">Recipes</a>
+                        <a class="text-[#1c140d] text-sm font-medium leading-normal" href="#about">About Us</a>
+                        <a class="text-[#1c140d] text-sm font-medium leading-normal" href="#contact">Contact</a>
+                    </div>
+                    <button
+                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#f38220] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em]"
+                        data-bs-toggle="modal" data-bs-target="#cartModal"
+                    >
+                        <span class="truncate">Cart ({{ cart.length }})</span>
+                    </button>
+                </nav>
+            </header>
+            <!-- Cart Modal -->
+            <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content bg-[#fcfaf8] border border-[#e8dace]">
+                        <div class="modal-header border-b border-[#f4ede7]">
+                            <h2 class="modal-title text-[#1c140d] text-lg font-bold" id="cartModalLabel">Your Cart</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div v-if="cart.length === 0">
+                                <p class="text-[#1c140d] text-base font-normal">Your cart is empty.</p>
+                            </div>
+                            <div v-else>
+                                <ul class="mb-3">
+                                    <li class="flex justify-between items-center py-2 border-b border-[#f4ede7]"
+                                        v-for="item in cart" :key="item.id">
+                                        <span class="text-[#1c140d] text-base font-medium">{{ item.name }} (x{{ item.quantity }})</span>
+                                        <span class="text-[#1c140d] text-base font-medium">KES {{ (item.price * item.quantity).toFixed(2) }}</span>
+                                    </li>
+                                </ul>
+                                <h3 class="text-[#1c140d] text-lg font-bold">Total: KES {{ totalPrice.toFixed(2) }}</h3>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-t border-[#f4ede7]">
+                            <button type="button" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-full h-10 px-4 bg-[#f38220] text-[#1c140d] text-sm font-bold" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-full h-10 px-4 bg-[#f38220] text-[#1c140d] text-sm font-bold" @click="sendOrder" :disabled="cart.length === 0">Send Order via WhatsApp</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <main class="px-4 sm:px-10 md:px-20 lg:px-40 flex flex-1 justify-center py-5">
+                <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+                    <section id="hero" class="@container">
+                        <div class="@[480px]:p-4">
+                            <div
+                                class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center p-4"
+                                style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC2duzWeyP_hCj9v2owWtVrsT61FRtDMzS-c9Sk2wNP79elhX94qa6zbMFc9qJRihdiCVEW5VT3VwiCvq86rev4rr0cSHbnElz9T-7vdbOYFD1bgdYMsG--ytBb-wdV-Vfs4TcqZRtK09gWWJmBpqo2vmMbCRi_fMI2B614hwi8p8eh5W-OneZfWEwdOUb8KKPPIH3uorYEhUQdt__b8NOkWGqeA0wuU_xZxmLtZVr2LdgDHdNoMx-g7xhfzWF6tNgTylKAJUppP6k");'
+                            >
+                                <div class="flex flex-col gap-2 text-center">
+                                    <h1
+                                        class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+                                    >
+                                        OddiBites
+                                    </h1>
+                                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                                        Your go-to spot for the best grilled and fried chicken and eggs in town. We deliver within Nairobi and its environs. Order now and taste the difference!
+                                    </h2>
+                                </div>
+                                <button
+                                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#f38220] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em]"
+                                >
+                                    <span class="truncate">Order Now</span>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="featured" class="mt-5">
+                        <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Featured Dishes</h2>
+                        <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            <div class="flex items-stretch p-4 gap-3">
+                                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-[200px] sm:min-w-[240px]">
+                                    <div
+                                        class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDXdrUANCUR0KHvmyS7-dTwXz-3uOWou7VYfBvj0sJ5GsV4rv_5vaVulRswXpoqYtDysndatVyyDuhZH7ljJi8a-vpb2QR8Yoquzi1WzTxK-BN-ucMFCbTY909kbXQ6rxp2Fohlc3GENlc7tyPH4MpOzkS0XrVPCqv8VGCJ2e654JJq4WcTbM2oSMirBOw3Cn4-IAqy8pmKl4Yo_1InYQp1tJupHAZSvkzmjeyXI-H8vpLHBZkcyjj1aRhdNYpQt6D9P6AuPxmfCUo");'
+                                        role="img" aria-label="Grilled Chicken Meal"
+                                    ></div>
+                                    <div>
+                                        <p class="text-[#1c140d] text-base font-medium leading-normal">Grilled Chicken Meal</p>
+                                        <p class="text-[#9c7049] text-sm font-normal leading-normal">Juicy grilled chicken served with rice and a side salad.</p>
+                                    </div>
+                                </div>
+                                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-[200px] sm:min-w-[240px]">
+                                    <div
+                                        class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC75hxsqC2AgwGTd4-5scdZ1xrIJ3BiJyXUt5_Kc6qpVS78tZJes0mOnc-nEbNk6EYradpuTxr0TyslEbtFGA06tsfLQYH4tDQzJdcHwy7Jb76JOKQalnO3ycPJ7HcIe_d2KSz34PJI27q55plaUczYwdddGXC8PK2J9wOZTiqH2fMznLGg7Wwz8mlA8xqCotEul2x7FmyugAZpIgqiR-SPzMyy2gjTBVSUSjh5oGpXhLk3uNkK4VM5fl2tgqLjjDyVmG4NT93JhsI");'
+                                        role="img" aria-label="Fried Chicken Combo"
+                                    ></div>
+                                    <div>
+                                        <p class="text-[#1c140d] text-base font-medium leading-normal">Fried Chicken Combo</p>
+                                        <p class="text-[#9c7049] text-sm font-normal leading-normal">Crispy fried chicken with a side of fries and your choice of sauce.</p>
+                                    </div>
+                                </div>
+                                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-[200px] sm:min-w-[240px]">
+                                    <div
+                                        class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBeNeh8BAYv-wsHBmoW0NG4dTrHxrq1HvLLn4DNh80bjpTvxnhA_LZZA3r6AtLlhpwF60aQ9RMnEp40OImqmOHJLFFg-9juXYV3W4zgFxN4UTGvmqwMxIcsolPQOtSkWr4PeJQUxEQuynPCAzpKgPs-YR84wm0gH-j6AybAdOYm3hWStLQtdn0fssLt9NgjpOtrJ02Xn7jJooP_YCPqu689t8dX7q6iNVYjblb0T1PHT65xFqoOpNnY6S_15h7DmuSf1bBAGtMbKDs");'
+                                        role="img" aria-label="Egg Sandwich"
+                                    ></div>
+                                    <div>
+                                        <p class="text-[#1c140d] text-base font-medium leading-normal">Egg Sandwich</p>
+                                        <p class="text-[#9c7049] text-sm font-normal leading-normal">Delicious egg sandwich with fresh vegetables.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="recipes">
+                        <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Recipes</h2>
+                        <div class="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+                            <div class="flex flex-col gap-3 pb-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB29JwGmDVqH878TYl3yu5z55FMVLCClJocqqVY-17HJxmGL-CnicybPKFU5UQZ_iobm_dP3FOLvR2SyHnSvXKn2JtpqDs3Mor_kBjASgW_0YAbd3KNQtX7j_aXYU2_Vdk3YuQ0QOcHbe4cUet8e9bsvcFy2reTKNxA4znrynkMs3OmWgbNSjsCEqWxngHtoNIH8ego-ixfJTgHSH1BQiJzPh9lqbUOd6o4-yr4wlca4jNQgyC83MgK1d-Wgj3pYQnr9_O6QAtOliY");'
+                                    role="img" aria-label="Grilled Chicken Recipe"
+                                ></div>
+                                <div>
+                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Grilled Chicken Recipe</p>
+                                    <p class="text-[#9c7049] text-sm font-normal leading-normal">Learn how to make our signature grilled chicken at home.</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3 pb-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAwkZKILLol_JNtdp1gXwjq4fuN5RUPOT0y7XKW6R518BB5hkXxeLI4EPDzjMXHzAGYVlOoGTakRRRjkeFqpEN1Ix5BPM080P7RKHW5AerrrhQfYr_By29PLVGt_Oc1AKnBrDjITSQCBhJwm0hrSehyMUO8E93IuoRBVKtFtSN4junnESriZCmFpOWxddu8iEemugzkZQRpWAXJ4XWV15eFPr38p7-j0LFoGIQV5-7UaTVWyw8NODDq_vZJ863saoCceMQaOkEjbSo");'
+                                    role="img" aria-label="Fried Chicken Recipe"
+                                ></div>
+                                <div>
+                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Fried Chicken Recipe</p>
+                                    <p class="text-[#9c7049] text-sm font-normal leading-normal">Follow our simple steps to create crispy fried chicken.</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3 pb-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBP-IIR4jCIVrdp6o4xJnn3yo8QfK7WY9H0Husas5WWG41YSCEB3nr1dKDrPMZ33ZbDg6Zy68Dz5RIa2n9NGDtU9Gk1MopR3diZrBSQL1JxArh6TQVR198G4bBtlxUTcmuU2kVQpbrAjhyY2oBIFiIM8F0T2XfpeJYYm9PRy3t1FcJl0kxxAGYQt8Z4Q0K5l77YZl7AkWzWk3Uch2fVMnFuFpr1uUgpmnH_almCRQI8zqMAZ_SnujVnx-s779OlPfkYBVYg1A7bR1U");'
+                                    role="img" aria-label="Egg Sandwich Recipe"
+                                ></div>
+                                <div>
+                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Egg Sandwich Recipe</p>
+                                    <p class="text-[#9c7049] text-sm font-normal leading-normal">Make a quick and tasty egg sandwich with our recipe.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="menu">
+                        <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Our Menu</h2>
+                        <div class="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+                            <div class="flex flex-col gap-3 pb-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBev9LI4kL8Vv3NO_BTSq9DcDPRCw_qqJ_TcHLwTijy8iNX89vmcHfSQrPPT4iY43b5b7mYg6hoa5sVge4v3A34Co_ZiZfu3qHVuBAmcUebNFT87MtNdGQE3glgtbj5rWPsjGwE9EHhUwRFpAHYivPU13S9ahXH9ix3cZeX2AOGlYhBKlqlRbGTHUHzmkRwSmjTqWFm7SU8QTh6JwvytnHYHGI7Fom_u072cJheJUfbJhMmffVZe4ZOFhex5bXtLd-jQJ6yzU9IzYY");'
+                                    role="img" aria-label="Grilled Chicken"
+                                ></div>
+                                <div>
+                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Grilled Chicken</p>
+                                    <p class="text-[#9c7049] text-sm font-normal leading-normal">Tender and flavorful grilled chicken. KES 500</p>
+                                    <label class="text-[#1c140d] text-sm font-medium">Quantity</label>
+                                    <input type="number" class="form-input w-full rounded-xl border-[#e8dace] bg-[#fcfaf8] text-[#1c140d] h-10 p-3" v-model.number="products[0].quantity" min="0" @input="updateCart(products[0])" aria-label="Grilled Chicken Quantity">
+                                    <button class="flex w-full cursor-pointer items-center justify-center rounded-full h-10 px-4 bg-[#f38220] text-[#1c140d] text-sm font-bold mt-2" @click="addToCart(products[0])">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3 pb-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDMbNG7Itl-06j9hahaBDl6fEKJfBqC5KXBvv4gr2k480pEO_gnVGu494reAAKJPPCi9iZvl5QjUbb1Z8Ur_j86WQSovD3CuB2ezxMOjiYPbRe5LTv6hikbnxKzP-wlffOLSYE8hZxYLH9S5VChwIXEGaD_Qc69t-2ym4HuUVdEICYsh6mepVMh8YKb9fyt1ayns0beQCCl_-ZROkAU9fr8TxrpGKqNiVKTPl7lGpylF71mPHsT7JyBtOZOO_onXmRY6bjjvvLfO6g");'
+                                    role="img" aria-label="Fried Chicken"
+                                ></div>
+                                <div>
+                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Fried Chicken</p>
+                                    <p class="text-[#9c7049] text-sm font-normal leading-normal">Crispy and juicy fried chicken. KES 450</p>
+                                    <label class="text-[#1c140d] text-sm font-medium">Quantity</label>
+                                    <input type="number" class="form-input w-full rounded-xl border-[#e8dace] bg-[#fcfaf8] text-[#1c140d] h-10 p-3" v-model.number="products[1].quantity" min="0" @input="updateCart(products[1])" aria-label="Fried Chicken Quantity">
+                                    <button class="flex w-full cursor-pointer items-center justify-center rounded-full h-10 px-4 bg-[#f38220] text-[#1c140d] text-sm font-bold mt-2" @click="addToCart(products[1])">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3 pb-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDZMJIEWJO5z-yK0kC8h4Ho-pKI6xRIPdOb5YGmsjUG_b_G0h5wqxQmtFBLZwjCCOFsz1cXPrf0-YiHCuNtTuwWUBrO_ftjekigIAgYtJCt_4HJiXvrNH4I2RvnhYH2T1ZH3vBGbAfKMJc-vpgiC6qMHmjc2tMkMVGu_FeTwrOgQ0IEFeVI7NyAet2gTdGcBNlms2pwcFLw8B7JCYbVqp31OqYOqFWBfKCS2XlUOE4Tpw57oQ3z07sX9lU5QXMvlhRlk_loLxSHGWM");'
+                                    role="img" aria-label="Eggs"
+                                ></div>
+                                <div>
+                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Eggs</p>
+                                    <p class="text-[#9c7049] text-sm font-normal leading-normal">Fresh and perfectly cooked eggs. KES 200</p>
+                                    <label class="text-[#1c140d] text-sm font-medium">Quantity</label>
+                                    <input type="number" class="form-input w-full rounded-xl border-[#e8dace] bg-[#fcfaf8] text-[#1c140d] h-10 p-3" v-model.number="products[2].quantity" min="0" @input="updateCart(products[2])" aria-label="Eggs Quantity">
+                                    <button class="flex w-full cursor-pointer items-center justify-center rounded-full h-10 px-4 bg-[#f38220] text-[#1c140d] text-sm font-bold mt-2" @click="addToCart(products[2])">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3 pb-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCVJ6MYu3X1Aa_fo4vW0M3eJBHfRJuc2xPnkDsCPCuxPBIY2YrIeTu01N27tzS43AuRujOuUD8umYk3QnnYbi_NnVmfikMWTjY75g_2Ystj7HZWeSxPke2_xPai2khiUdS4zWqf5sUvS5wNe2xsy0ClV4sQNj81Og-18A8YMKbKp4bRBT4GGm4k4tK7O3SqztvVBB7zjlbS0CLhhZMnUwKNcgZFph_Qhkgz0GAMXY0tdKqSAdqRYCL_ZX2ZJR6VmMt4-6kL30WNfYI");'
+                                    role="img" aria-label="Sides"
+                                ></div>
+                                <div>
+                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Sides</p>
+                                    <p class="text-[#9c7049] text-sm font-normal leading-normal">Various sides to complement your meal. KES 150</p>
+                                    <label class="text-[#1c140d] text-sm font-medium">Quantity</label>
+                                    <input type="number" class="form-input w-full rounded-xl border-[#e8dace] bg-[#fcfaf8] text-[#1c140d] h-10 p-3" v-model.number="products[3].quantity" min="0" @input="updateCart(products[3])" aria-label="Sides Quantity">
+                                    <button class="flex w-full cursor-pointer items-center justify-center rounded-full h-10 px-4 bg-[#f38220] text-[#1c140d] text-sm font-bold mt-2" @click="addToCart(products[3])">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3 pb-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAEpWZEaTMUu3C45GdBUatrQCteHX8u4GyIB0bpnCbQh4ASgmsllNUEV_9XFmEtl2Ei0dZnBwn83LDrb_1pWDSkopfDLjNjtkSdOJBIDhpXGipRRpTuUQREJG-HPlpPAwjenK2LbDHPkfA-pCH1vO66u6VHdEl0wfUdUIa2dgqTDCsbjgvlIbNUVlrlV-8bXMkJo9SVaRvEacQoLWDqpNhctBTojiiAjrK9s2hR12luvpfcuczyaK6kUgHQxPZg3b5lefOFf1cr8eU");'
+                                    role="img" aria-label="Drinks"
+                                ></div>
+                                <div>
+                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Drinks</p>
+                                    <p class="text-[#9c7049] text-sm font-normal leading-normal">Refreshing beverages to quench your thirst. KES 100</p>
+                                    <label class="text-[#1c140d] text-sm font-medium">Quantity</label>
+                                    <input type="number" class="form-input w-full rounded-xl border-[#e8dace] bg-[#fcfaf8] text-[#1c140d] h-10 p-3" v-model.number="products[4].quantity" min="0" @input="updateCart(products[4])" aria-label="Drinks Quantity">
+                                    <button class="flex w-full cursor-pointer items-center justify-center rounded-full h-10 px-4 bg-[#f38220] text-[#1c140d] text-sm font-bold mt-2" @click="addToCart(products[4])">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="gallery">
+                        <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Gallery</h2>
+                        <div class="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+                            <div class="flex flex-col gap-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5rDuEnFEYUbywByT68VVsSpeqYmrqPjPyq_I9VtDJA56Y-EFIv5LQ4WcvAs7KCxqd1MhZ5LedwnP9aw0ONFuh28h_BKWYrwlECYtzLLNsQOBhY3k3wRkbAZKsJIWmLTAVMguuRXm1La_sGil_qSyQMyIU61HKbuchsBtacZu_OMm9uzmBWzQumHkmj5g9yqGAc4C2kyTYKpvPv4timxLGYJVQv6a-Pblvqw2fIy-fQEnKhqK3CIZIXRk3tVgCEPiuXTNwJohava4");'
+                                    role="img" aria-label="Gallery Image 1"
+                                ></div>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB47QQRfceZvP3WbVSBNl8nPgiKqUCvYvKPHZf7yXMXQkOtcU_ec3ZV7HFx03ulSS5auP4JVBIaaOOtcbZrn68QsSGxAbn5spq7MQEA43rk76tKhJAUkYula9RDJlut3ZfoHKxB6E3QGWlh-m80sraKXro83z7UFLGof4nJfpOqVDufMdoSBwjZFjRBoO16BqSPOjOiN5pf_rR4yDEJOzDPLRrDg9M7ny-fR6wk2kBg4DtTCbECKuv-0b4Npev4OXjsdWMKyRQuq58");'
+                                    role="img" aria-label="Gallery Image 2"
+                                ></div>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDPNSqYaT2zttFiNDMUDDRf4hgUgiqoxCvXBP5LMyM0yXvPlbvE16Y6WpoG9JLQpfA-VOsa9VzIT3A7nAvOu1idrJFubEyRvFXj8K53j0HJJzsVgzT28c45jvNpv_Jw_sjBU5123jbJN4nIpxKZzsoUQbb37X9dJgQOQ_zxJDzM2abT8q2EwNCGF25uhcM3A_Bc243L9zKIidq-tftTuTSS7qY8VQaphq_ME1PDIqCHxw8-YVlDazciiR00dAUE0rcS7z2SYYQh2x0");'
+                                    role="img" aria-label="Gallery Image 3"
+                                ></div>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAYA4o748bwP2D0M87k6j2wPE0YGwbtp8raC8s9d__QMerIA-qk6OuCHE9cJLuOZOztE6ML64TLKX98CM0k9SEozEssMeayZLgwtyT3f1HAhta0QSGdLcwp3O-0JDMLblCNAU_CYxkVpEFUMlxcS27PpLLwi7fZFwpD8sguAmsj29C1jOTpYyHdXGcYmoGEw8WvNdgwnwe5SwsayOIncaX9ScnwevFBawVdBBttv2rtPoeEUWL_qjgxSOodIrznpBLbxa8t6KvRT50");'
+                                    role="img" aria-label="Gallery Image 4"
+                                ></div>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAW8tjZTgeafd547bVT1RPuxTrFX97_Q32ozvsH2P911-XL1dreb0KcEb3UwzMjB8E1FfVvEtSjrNEjdy3rAwujRE8HSGCmCYR7waWSFpt_lgh7q7JGEM1k71R_arImXV7VQdrRsyrZ7EZq2iafeS3b8NRNW5nKpC5EUL-dm09vclPSwRqsu-x9OWWjmNfPBDvOppPPA7yGv2AjWUJHIbnp-bSZajksSTUgQPoGRKD7i1AuvlswuIRTdlfYt4FEkuJw0I_byfBEVQ4");'
+                                    role="img" aria-label="Gallery Image 5"
+                                ></div>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <div
+                                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4fDk4fYZ8V9AtZNaePaPxvkFsjPo3QsbCjzZWzj_ZvOa5IJJlxJIgczuGZRP3EKO3M8U0_J84QKpDV6GwQqMXJqC50L1Q9gcPxpyPZjNSQnH82eDmhvDoJNgS6r69ttG9tJYR_phMYFP4GVJq4g8bTeyY7YfoGgcWTUBG4Yi_7FADSIk21zacr9qqhXh4ZFm-gqhUTEHzy1-NBObjD7RVsNDjTbW-_RUgAvn8iB7GqMmYTDuMo8-Mr_9TWT-l7RzEX06rYQTUAgE");'
+                                    role="img" aria-label="Gallery Image 6"
+                                ></div>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="testimonials">
+                        <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Testimonials</h2>
+                        <div class="flex flex-col gap-8 overflow-x-hidden bg-[#fcfaf8] p-4">
+                            <div class="flex flex-col gap-3 bg-[#fcfaf8]">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBiYHasya4NiGQg180qU1HXC9bfd3U262y4Ff-P0QFoLl0DRjxjNvoDoOfA4d_iSYqj7v1BEjZ4_t0TJvHZHVefwJ6nkt7_ppu09rz1WxSZ8_LkfWmVit2CW8RhafXdpttyWH302Mf7AmSetabrJrHRC47eJ08OC-SuXMwV4tht4-Aa_3m7mI3dH-q5t3quF7K0cchi8bEKe_AgJP6VwtmxY4BdB7NkUJftIOxY-0CZq9kUiDKvZ-8pkE_h72kYVWxEAmiNzHZMaZw");'
+                                        role="img" aria-label="Aisha Kamau Profile"
+                                    ></div>
+                                    <div class="flex-1">
+                                        <p class="text-[#1c140d] text-base font-medium leading-normal">Aisha Kamau</p>
+                                        <p class="text-[#9c7049] text-sm font-normal leading-normal">May 15, 2024</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-0.5">
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="text-[#1c140d] text-base font-normal leading-normal">
+                                    The grilled chicken was absolutely delicious! Perfectly cooked and seasoned. Will definitely order again.
+                                </p>
+                            </div>
+                            <div class="flex flex-col gap-3 bg-[#fcfaf8]">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDH6_j4u1LZezJFM4ezOrE5BE_xngD9JJUU0e3UHU5qoAydWn3sOipce3dff7lAzbOvmyfjrBuKKgkaSGbewLbWg7E1lwjfDJIuK8mZdM-XEUegF1XwANRP9nV7iKSX33rE4-P6ijHpiQ-UxwfXD8CmHBpKBYgc9KUsEtu5uMLv1D-jUButfwsjqVSbxaf46wONkZcgR2nIO-rYXG98aUt6DGgc8FUYl5PatLED4ZhHHIa9ijv4MFySlaEIXOF4CIoHd-PnpIuUSQ8");'
+                                        role="img" aria-label="David Mwangi Profile"
+                                    ></div>
+                                    <div class="flex-1">
+                                        <p class="text-[#1c140d] text-base font-medium leading-normal">David Mwangi</p>
+                                        <p class="text-[#9c7049] text-sm font-normal leading-normal">June 2, 2024</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-0.5">
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#d8c0ac]" data-icon="Star" data-size="20px" data-weight="regular">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M239.2,97.29a16,16,0,0,0-13.81-11L166,81.17,142.72,25.81h0a15.95,15.95,0,0,0-29.44,0L90.07,81.17,30.61,86.32a16,16,0,0,0-9.11,28.06L66.61,153.8,53.09,212.34a16,16,0,0,0,23.84,17.34l51-31,51.11,31a16,16,0,0,0,23.84-17.34l-13.51-58.6,45.1-39.36A16,16,0,0,0,239.2,97.29Zm-15.22,5-45.1,39.36a16,16,0,0,0-5.08,15.71L187.35,216v0l-51.07-31a15.9,15.9,0,0,0-16.54,0l-51,31h0L82.2,157.4a16,16,0,0,0-5.08-15.71L32,102.35a.37.37,0,0,1,0-.09l59.44-5.14a16,16,0,0,0,13.35-9.75L128,32.08l23.2,55.29a16,16,0,0,0,13.35,9.75L224,102.26S224,102.32,224,102.33Z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="text-[#1c140d] text-base font-normal leading-normal">The fried chicken was good, but a bit too crispy for my liking. The sides were great though.</p>
+                            </div>
+                            <div class="flex flex-col gap-3 bg-[#fcfaf8]">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD5fLMC4_TSRK8xv4e4bT5btXmBvfUWGfUWL3m9EHbbDfKYBNvMQVeOH5GD8qDqwEnkw5JT8aSswyDIA6kQR0qf8hFu-SPh070PzlFfW88qzlBsW4hDkyVqkfyt_wo1Fyqz-lvFYS5G5HgTs0BCB3pZ4HgRCMXzCR-Pe9rFd1Ns3G25fTuxUctVUwEenrh7vWRrFyPw-PIZ4ACSlhrBx3OXm9qUCTFpNfAufuE4DFyNxjzsRgaTX8Bi_f5KWUg6evT9l0eSKeB5z74");'
+                                        role="img" aria-label="Imani Wambui Profile"
+                                    ></div>
+                                    <div class="flex-1">
+                                        <p class="text-[#1c140d] text-base font-medium leading-normal">Imani Wambui</p>
+                                        <p class="text-[#9c7049] text-sm font-normal leading-normal">July 10, 2024</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-0.5">
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-[#f38220]" data-icon="Star" data-size="20px" data-weight="fill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                            <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="text-[#1c140d] text-base font-normal leading-normal">I love OddiBites! The egg sandwich is my favorite. So fresh and tasty. Highly recommend!</p>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="about">
+                        <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">About Us</h2>
+                        <p class="text-[#1c140d] text-base font-normal leading-normal pb-3 pt-1 px-4">
+                            OddiBites is a street food vendor dedicated to serving high-quality grilled and fried chicken and eggs. We use fresh ingredients and our secret recipes to create mouthwatering dishes that will leave you craving for more. Our mission is to provide delicious food with excellent service, making every meal a memorable experience.
+                        </p>
+                    </section>
+                    <section id="contact">
+                        <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Contact</h2>
+                        <p class="text-[#1c140d] text-base font-normal leading-normal pb-3 pt-1 px-4">
+                            Have questions or want to place an order? Contact us via WhatsApp or visit us at our location on Main Street. We accept Mpesa and cash payments. We're here to serve you!
+                        </p>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- Vue 3 and Bootstrap JS -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            setup() {
+                // VERDETECH: Define reactive state for products and cart
+                const products = Vue.ref([
+                    { id: 1, name: 'Grilled Chicken', price: 500, quantity: 0 },
+                    { id: 2, name: 'Fried Chicken', price: 450, quantity: 0 },
+                    { id: 3, name: 'Eggs', price: 200, quantity: 0 },
+                    { id: 4, name: 'Sides', price: 150, quantity: 0 },
+                    { id: 5, name: 'Drinks', price: 100, quantity: 0 }
+                ]);
+
+                const cart = Vue.ref([]);
+
+                // VERDETECH: Compute total price of cart items
+                const totalPrice = Vue.computed(() => {
+                    return cart.value.reduce((total, item) => total + item.price * item.quantity, 0);
+                });
+
+                // VERDETECH: Update cart when quantity changes
+                const updateCart = (product) => {
+                    if (product.quantity < 0) product.quantity = 0;
+                    const cartItem = cart.value.find(item => item.id === product.id);
+                    if (cartItem) {
+                        if (product.quantity === 0) {
+                            cart.value = cart.value.filter(item => item.id !== product.id);
+                        } else {
+                            cartItem.quantity = product.quantity;
+                        }
+                    } else if (product.quantity > 0) {
+                        cart.value.push({ ...product });
+                    }
+                };
+
+                // VERDETECH: Add item to cart
+                const addToCart = (product) => {
+                    if (product.quantity > 0) {
+                        const cartItem = cart.value.find(item => item.id === product.id);
+                        if (!cartItem) {
+                            cart.value.push({ ...product });
+                        } else {
+                            cartItem.quantity = product.quantity;
+                        }
+                    }
+                };
+
+                // VERDETECH: Generate WhatsApp message and redirect
+                const sendOrder = () => {
+                    if (cart.value.length === 0) {
+                        alert('Your cart is empty!');
+                        return;
+                    }
+                    const message = `New Order from OddiBites:\n${cart.value.map(item => `${item.name} (x${item.quantity}): KES ${(item.price * item.quantity).toFixed(2)}`).join('\n')}\nTotal: KES ${totalPrice.value.toFixed(2)}`;
+                    const phoneNumber = '+254705012055';
+                    const encodedMessage = encodeURIComponent(message);
+                    window.location.href = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`;
+                };
+
+                return { products, cart, totalPrice, updateCart, addToCart, sendOrder };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
